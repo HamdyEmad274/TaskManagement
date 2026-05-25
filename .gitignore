@@ -1,0 +1,57 @@
+# Build outputs
+bin/
+obj/
+out/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Publish output
+publish/
+PublishProfiles/
+
+# .NET Core
+*.runtimeconfig.json
+
+# Entity Framework migrations (keep the files, ignore the snapshots if you want — we keep them)
+# Uncomment below to ignore migrations:
+# **/Migrations/
+
+# Secrets — NEVER commit these
+appsettings.Production.json
+secrets.json
+*.pfx
+*.p12
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Block 4 — Authentication</title>
+  <style>
+    :root {
+      --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a; --border: #2e3350;
+      --accent: #7c6af7; --accent2: #4fc3f7; --green: #4caf7d; --red: #e05c5c;
+      --yellow: #f0c040; --text: #e2e4f0; --muted: #8890b0; --code-bg: #12151f;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 16px; line-height: 1.8; padding: 40px 20px; }
+    .page { max-width: 900px; margin: 0 auto; }
+    .page-header { border-bottom: 2px solid var(--accent); padding-bottom: 20px; margin-bottom: 40px; text-align: center; }
+    .page-header .block-label { font-size: 13px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+    .page-header h1 { font-size: 28px; color: #fff; }
+    .page-header p { color: var(--muted); margin-top: 8px; font-size: 14px; direction: rtl; }
+    .built-box { background: var(--surface); border: 1px solid var(--border); border-right: 4px solid var(--green); border-radius: 8px; padding: 20px 24px; margin-bottom: 40px; }
+    .built-box h2 { color: var(--green); font-size: 14px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+    .built-box ul { list-style: none; padding: 0; }
+    .built-box ul li { padding: 4px 0; color: var(--text); direction: rtl; }
+    .built-box ul li::before { content: "✓ "; color: var(--green); font-weight: bold; }
+    .lesson { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 32px; overflow: hidden; }
+    .lesson-header { background: var(--surface2); padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; flex-direction: row-reverse; }
+    .lesson-number { background: var(--accent); color: #fff; font-size: 12px; font-weight: bold; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .lesson-title { font-size: 17px; font-weight: bold; color: #fff; direction: rtl; }
+    .lesson-body { padding: 24px; }
+    .arabic { direction: rtl; text-align: right; color: var(--text); line-height: 2; }
+    .arabic p { margin-bottom: 12px; }
+    .english { direction: ltr; text-align: left; color: var(--text); line-height: 1.8; }
+    .lang-divider { border: none; border-top: 1px dashed var(--border); margin: 20px 0; }
+    .section-title { font-size: 14px; font-weight: bold; color: var(--accent2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; margin-top: 20px; direction: rtl; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 16px 18px; overflow-x: auto; font-family: 'Cascadia Code', 'Consolas', monospace; font-size: 13.5px; line-height: 1.7; direction: ltr; text-align: left; margin: 12px 0 20px 0; color: #c9d1d9; }
+    code { background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px; font-family: 'Cascadia Code', 'Consolas', monospace; font-size: 13px; color: #79c0ff; direction: ltr; display: inline-block; }
+    .diagram { background: var(--code-bg); border: 1px solid var(--accent); border-radius: 8px; padding: 20px; text-align: center; font-family: monospace; font-size: 13px; color: var(--accent2); direction: ltr; margin: 16px 0; line-height: 2; white-space: pre; }
+    .note { border-radius: 6px; padding: 14px 18px; margin: 14px 0; direction: rtl; text-align: right; font-size: 14.5px; line-height: 1.9; }
+    .note.info  { background: #1a2540; border-right: 4px solid var(--accent2); }
+    .note.warn  { background: #2a2010; border-right: 4px solid var(--yellow); }
+    .note.good  { background: #0f2a1a; border-right: 4px solid var(--green); }
+    .note.bad   { background: #2a0f0f; border-right: 4px solid var(--red); }
+    .note .note-label { font-weight: bold; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+    .note.info  .note-label { color: var(--accent2); }
+    .note.warn  .note-label { color: var(--yellow); }
+    .note.good  .note-label { color: var(--green); }
+    .note.bad   .note-label { color: var(--red); }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 16px 0; direction: rtl; }
+    th { background: var(--surface2); color: var(--accent2); padding: 10px 14px; text-align: right; border-bottom: 2px solid var(--border); }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:hover td { background: var(--surface2); }
+    td code { font-size: 12px; }
+    table.ltr-table { direction: ltr; }
+    table.ltr-table th, table.ltr-table td { text-align: left; }
+    ul.ar-list { direction: rtl; text-align: right; padding-right: 20px; list-style: disc; margin: 10px 0; color: var(--text); line-height: 2; }
+    .evolution-step { display: flex; flex-direction: row-reverse; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+    .evolution-badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-size: 12px; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+    .evolution-badge.bad { border-color: var(--red); color: var(--red); }
+    .evolution-badge.warn { border-color: var(--yellow); color: var(--yellow); }
+    .evolution-badge.good { border-color: var(--green); color: var(--green); }
+    .evolution-content { direction: rtl; text-align: right; }
+    .page-footer { margin-top: 50px; border-top: 1px solid var(--border); padding-top: 20px; text-align: center; color: var(--muted); font-size: 13px; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="block-label">Block 4</div>
+    <h1>Authentication</h1>
+    <p>تخزين كلمات المرور + إثبات الهوية — BCrypt + JWT</p>
+  </div>
+
+  <div class="built-box">
+    <h2>ما اللي بنيناه في الـ Block ده</h2>
+    <ul>
+      <li>PasswordHasher — تشفير كلمات المرور بـ BCrypt</li>
+      <li>JwtTokenGenerator — توليد JWT Tokens للمستخدمين</li>
+      <li>JwtSettings — إعدادات الـ JWT من الـ Configuration</li>
+      <li>JWT Middleware في الـ Program.cs</li>
+    </ul>
+  </div>
+
+  <!-- Lesson 1: Password Storage Evolution -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <div class="lesson-number">1</div>
+      <div class="lesson-title">تطور تخزين كلمات المرور — من الكارثة للأمان</div>
+    </div>
+    <div class="lesson-body">
+
+      <div class="arabic">
+        <p>
+          أكتوبر 2013 — Adobe Systems. تسريب 153 مليون حساب مستخدم.
+          كلمات المرور كانت مخزّنة بـ <strong>Plain Text</strong> — قابلة للقراءة مباشرة.
+          كل شخص حمّل الملف شاف كلمة مرور كل مستخدم.
+        </p>
+        <p>
+          السؤال: <strong>ازاي تخزّن كلمة المرور بحيث لو الـ Database اتسرق، المهاجم ما يلاقيش حاجة مفيدة؟</strong>
+        </p>
+      </div>
+
+      <hr class="lang-divider" />
+      <div class="section-title">الجيل الأول — Plain Text</div>
+      <div class="evolution-step">
+        <div class="evolution-badge bad">كارثة</div>
+        <div class="evolution-content">
+          <p>الـ Database اتسرق = كل كلمات المرور مكشوفة فوراً.</p>
+          <p>مفيش أي حماية.</p>
+        </div>
+      </div>
+
+      <hr class="lang-divider" />
+      <div class="section-title">الجيل التاني — MD5 / SHA هاش بسيط</div>
+      <div class="evolution-step">
+        <div class="evolution-badge warn">غير كافي</div>
+        <div class="evolution-content">
+          <p>بدل ما تخزن الكلمة، بتحسب الـ Hash وتخزّنه.</p>
+          <p>المشكلة: الـ MD5 سريع جداً — GPU حديث يحسب 200 مليار Hash في الثانية.</p>
+          <p>المهاجم بيستخدم <strong>Rainbow Table</strong> — جدول جاهز فيه الهاش لكل كلمة شائعة.</p>
+          <p>بيبحث عن الهاش المسروق في الجدول في أقل من ثانية.</p>
+        </div>
+      </div>
+
+      <hr class="lang-divider" />
+      <div class="section-title">الجيل التالت — Salted Hash</div>
+      <div class="evolution-step">
+        <div class="evolution-badge warn">أحسن — لكن لسه مش كافي</div>
+        <div class="evolution-content">
+          <p>بتضيف String عشوائي (الـ Salt) لكل مستخدم قبل الهاش.</p>
+          <p>نفس كلمة المرور لكل مستخدم تعطي هاش مختلف خالص.</p>
+          <p>بيبطّل الـ Rainbow Tables لأنها مبنيّة من غير الـ Salt.</p>
+          <p>المشكلة: Brute Force لسه ممكن — الـ SHA سريع ومهاجم يقدر يجرب ملايين الاحتمالات في الثانية.</p>
+        </div>
+      </div>
+
+      <hr class="lang-divider" />
+      <div class="section-title">الجيل الرابع — BCrypt (Key Stretching)</div>
+      <div class="evolution-step">
+        <div class="evolution-badge good">الصح</div>
+        <div class="evolution-content">
+          <p>البطء هو الميزة — مش العيب.</p>
+          <p>بـ Cost Factor 12: كل هاش بياخد ~400ms.</p>
+          <p>من ناحية المستخدم: مش حاسس بالفرق عند اللوجين.</p>
+          <p>من ناحية المهاجم: بدل 200 مليار هاش في الثانية — بقى 2-3 هاش في الثانية. كلمة مرور ضعيفة بتاخد سنين تُكسر.</p>
+        </div>
+      </div>
+
+      <div class="note info">
+        <div class="note-label">💡 شكل الـ BCrypt Hash</div>
+        <pre style="margin:8px 0;">$2a$12$N9qo8uLOickgx2ZMRZoMye...
+ ↑   ↑  ↑──────────────────────────
+ │   │  Salt (22 char) + Hash (31 char)
+ │   └── Cost Factor (12)
+ └── BCrypt Version</pre>
+        <p style="direction:rtl; margin-top:8px;">
+          كل حاجة محتاجها للـ Verification موجودة في الـ String نفسه — مفيش حاجة تخزّنها منفصلة.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lesson 2: Sessions Problem -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <div class="lesson-number">2</div>
+      <div class="lesson-title">مشكلة الـ Sessions عند الـ Scale</div>
+    </div>
+    <div class="lesson-body">
+      <div class="arabic">
+        <p>
+          بعد ما حللت مشكلة تخزين كلمة المرور، في سؤال تاني:
+          <strong>ازاي السيرفر يعرف مين اللي بيعمل الـ Request ده؟</strong>
+        </p>
+        <p>
+          الطريقة التقليدية: الـ Sessions — السيرفر بيحفظ في ذاكرته إن المستخدم X اتسجل دخول،
+          ويديه Cookie فيها Session ID.
+        </p>
+        <p>
+          بيشتغل كويس — على سيرفر واحد.
+        </p>
+      </div>
+
+      <div class="diagram">المستخدم يلوجن ──► Server A يحفظ Session في ذاكرته
+                    ──► يديه Cookie: session_id=abc123
+
+Request تاني ──► Load Balancer ──► Server B
+                                     Session مش موجودة هنا
+                                     401 Unauthorized ← المستخدم ابتدع يلوجن!
+      </div>
+
+      <div class="arabic">
+        <p>
+          المشكلة الجذرية: <strong>السيرفر بيحتفظ بـ State</strong>.
+          وأي State على سيرفر واحد مش موجودة على السيرفرات التانية.
+        </p>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>الحل</th><th>المشكلة</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Sticky Sessions — دايماً وجّه نفس المستخدم لنفس السيرفر</td>
+            <td>السيرفر وقع = كل مستخدميه اتـlog out</td>
+          </tr>
+          <tr>
+            <td>Sessions في DB مشتركة</td>
+            <td>كل Request بيعمل DB query — بطء وـbottleneck</td>
+          </tr>
+          <tr>
+            <td>Sessions في Redis</td>
+            <td>بيشتغل، لكنه Service إضافي لازم تشغّله وتـscale</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note warn">
+        <div class="note-label">⚠ جذر المشكلة</div>
+        مش Sessions بالذات هي المشكلة — المشكلة إن السيرفر بيتذكر.
+        الحل: خلّي السيرفر <strong>ينسى</strong> — والمستخدم هو اللي يجيب إثبات هويته مع كل Request.
+      </div>
+    </div>
+  </div>
+
+  <!-- Lesson 3: JWT -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <div class="lesson-number">3</div>
+      <div class="lesson-title">الـ JWT — الهوية المحمولة</div>
+    </div>
+    <div class="lesson-body">
+      <div class="arabic">
+        <p>
+          الـ JWT هو String فيه 3 أجزاء مفصولة بنقط.
+          المستخدم بيجيب الـ Token ده مع كل Request.
+          السيرفر بيتحقق منه من غير ما يرجع لأي DB أو Session Store.
+        </p>
+      </div>
+
+      <div class="section-title">تشريح الـ JWT</div>
+      <pre>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+.eyJzdWIiOiI0MiIsImVtYWlsIjoiaGFtZHlAZW1haWwuY29tIiwicm9sZSI6IlVzZXIifQ
+.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+│────────────────────────────────────────│
+      Header (Base64)                 Payload (Base64)            Signature</pre>
+
+      <table>
+        <thead>
+          <tr><th>الجزء</th><th>المحتوى</th><th>مهمته</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Header</td>
+            <td><code>{ "alg": "HS256", "typ": "JWT" }</code></td>
+            <td>نوع الخوارزمية المستخدمة للتوقيع</td>
+          </tr>
+          <tr>
+            <td>Payload</td>
+            <td><code>{ "sub": "42", "role": "User", "exp": 1716403200 }</code></td>
+            <td>بيانات المستخدم (Claims)</td>
+          </tr>
+          <tr>
+            <td>Signature</td>
+            <td>HMAC-SHA256 (Header + Payload + Secret Key)</td>
+            <td>يثبت إن حاجة ما اتغيرتش</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="section-title">ازاي بيشتغل</div>
+      <div class="diagram">Login ──► السيرفر بيـverify الـ Password
+       ──► بيولّد JWT فيه userId + role + expiry
+       ──► المستخدم بيحتفظ بالـ Token
+
+Request تاني ──► Authorization: Bearer eyJ...
+                  السيرفر بيـdecode الـ Header والـ Payload
+                  بيحسب الـ Signature من جديد باستخدام الـ Secret Key
+                  لو متطابق → موثوق
+                  بيـcheck الـ exp → مش انتهى؟
+                  يخدم الـ Request ✓</div>
+
+      <div class="note warn">
+        <div class="note-label">⚠ تحذير أمني مهم</div>
+        الـ Payload مش مشفّر — هو Base64 بس. أي حد عنده الـ Token يقدر يقراه.
+        ما تحطش فيه بيانات حساسة زي كلمة المرور أو رقم البطاقة.
+        حط فيه بس: userId, role, expiry — وخلاص.
+      </div>
+
+      <div class="section-title">ليه الـ Signature هو القلب؟</div>
+      <div class="arabic">
+        <p>
+          سؤال: لو الـ Payload مقروء، مش المهاجم يغير <code>"role":"User"</code> لـ <code>"role":"Admin"</code>؟
+        </p>
+        <p>
+          الجواب: يقدر يغيّر الـ Payload — لكن الـ Signature هيبقى غلط.
+          لأن الـ Signature محسوب من الـ Payload الأصلي + Secret Key اللي بس السيرفر عارفه.
+          لما السيرفر بيحسب الـ Signature من جديد ويقارنه، هيلاقي اختلاف ويرفض الـ Token.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lesson 4: Revocation Problem -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <div class="lesson-number">4</div>
+      <div class="lesson-title">مشكلة الـ Revocation — الضعف المتأصل في الـ JWT</div>
+    </div>
+    <div class="lesson-body">
+      <div class="arabic">
+        <p>
+          الـ JWT مش ممكن يتلغى قبل ما ينتهي وقته.
+        </p>
+        <p>
+          سيناريو: مستخدم اتسرق حسابه. المدير مسح الحساب من الـ DB.
+          المهاجم لسه عنده Token صالح لمدة 23 ساعة.
+          السيرفر بيشوفه صالح — مش بيرجع DB عشان يـcheck.
+        </p>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th></th><th>Sessions</th><th>JWT</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>قابلية الـ Scale</td><td>محدودة — تحتاج Shared State</td><td>لا محدودة — Stateless</td></tr>
+          <tr><td>الـ Revocation</td><td>فوري — امسح الـ Session</td><td>مش ممكن قبل الانتهاء</td></tr>
+          <tr><td>DB Lookup لكل Request</td><td>نعم</td><td>لا</td></tr>
+          <tr><td>اللوجاوت الفعلي</td><td>فوري</td><td>مش فوري</td></tr>
+        </tbody>
+      </table>
+
+      <div class="section-title">الحل العملي — Expiry قصير + Refresh Token</div>
+
+      <div class="diagram">Access Token:   ينتهي في 15 دقيقة   ← Stateless, سريع
+Refresh Token:  ينتهي في 7 أيام    ← متخزّن في DB، قابل للإلغاء
+
+اللوجين:
+  ← Access Token (15 دقيقة)
+  ← Refresh Token (7 أيام) متخزّن في DB
+
+طبيعي:
+  كل Request بيستخدم Access Token فقط ← مفيش DB Lookup
+
+Access Token انتهى:
+  POST /auth/refresh + Refresh Token
+  ← السيرفر بيـcheck الـ Refresh Token في DB
+  ← لو صالح: يولّد Access Token جديد
+
+اللوجاوت:
+  امسح الـ Refresh Token من الـ DB
+  Access Token لسه صالح لـ 15 دقيقة كحد أقصى ← Trade-off مقبول</div>
+
+      <div class="note info">
+        <div class="note-label">💡 في مشروعنا</div>
+        حالياً بنعمل Access Tokens بس (60 دقيقة). الـ Refresh Tokens جاية في Block متقدم.
+        الـ Trade-off معروف ومقبول — لو حساب اتسرق، المهاجم عنده ساعة كحد أقصى.
+      </div>
+    </div>
+  </div>
+
+  <!-- Lesson 5: Middleware Order -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <div class="lesson-number">5</div>
+      <div class="lesson-title">ترتيب الـ Middleware — غلطة واحدة تكسر كل حاجة</div>
+    </div>
+    <div class="lesson-body">
+      <div class="arabic">
+        <p>
+          في الـ ASP.NET Core، الـ Request بيمشي خلال سلسلة من الـ Middleware بالترتيب.
+          في Authentication وAuthorization، الترتيب حرفياً بيكسر الـ App لو غلط.
+        </p>
+      </div>
+
+      <div class="note bad">
+        <div class="note-label">✗ غلط — نتيجة: 401 دايماً حتى مع Token صالح</div>
+      </div>
+      <pre>app.UseAuthorization();     // بيشوف HttpContext.User ← فاضي
+app.UseAuthentication();    // بيملي HttpContext.User ← متأخر جداً</pre>
+
+      <div class="note good">
+        <div class="note-label">✓ صح</div>
+      </div>
+      <pre>app.UseAuthentication();    // بيقرأ الـ Token ويملي HttpContext.User
+app.UseAuthorization();     // بيشوف HttpContext.User ← جاهز</pre>
+
+      <div class="arabic">
+        <p>
+          <code>UseAuthentication</code>: بيقرأ الـ JWT Token من الـ Header، بيـverify الـ Signature، وبيحط الـ Claims في <code>HttpContext.User</code>.
+        </p>
+        <p>
+          <code>UseAuthorization</code>: بيشوف <code>HttpContext.User</code> ويقرر لو المستخدم عنده صلاحية الـ Endpoint ده.
+        </p>
+        <p>
+          لو عكستهم، الـ Authorization بيشوف User فاضي ويرجع 401 — حتى لو الـ Token صالح 100%.
+        </p>
+      </div>
+
+      <div class="section-title">ليه <code>ClockSkew = TimeSpan.Zero</code>؟</div>
+      <div class="arabic">
+        <p>
+          بالـ Default، الـ JWT بيسمح بـ 5 دقائق تسامح بعد انتهاء الـ Token.
+          يعني Token انتهى الساعة 3 لسه شغّال لحد 3:05.
+          ده بيهزّل الـ Security — لو مستخدم اتـlog out، الـ Window المفتوحة للمهاجم أطول.
+        </p>
+        <p>
+          <code>ClockSkew = TimeSpan.Zero</code> بتلغي التسامح ده — Token انتهى = انتهى فوراً.
+          إنت كتبتها في الكود من غير ما طُلب منك — ده instinct سليم.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Common Mistakes -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <div class="lesson-number">!</div>
+      <div class="lesson-title">أخطاء شائعة في الـ Block ده</div>
+    </div>
+    <div class="lesson-body">
+      <table class="ltr-table">
+        <thead>
+          <tr><th>Mistake</th><th>Symptom</th><th>Fix</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>UseAuthorization</code> before <code>UseAuthentication</code></td>
+            <td>401 on every request even with valid token</td>
+            <td>Always: Authentication → Authorization</td>
+          </tr>
+          <tr>
+            <td><code>Verify(hash, password)</code> — wrong argument order</td>
+            <td>Login always fails — nobody can ever log in</td>
+            <td><code>Verify(plainText, storedHash)</code></td>
+          </tr>
+          <tr>
+            <td>Secret key shorter than 32 characters</td>
+            <td><code>ArgumentOutOfRangeException</code> at startup</td>
+            <td>Use at least 32-character key for HS256</td>
+          </tr>
+          <tr>
+            <td><code>DateTime.Now</code> in token expiry</td>
+            <td>Tokens expire at wrong times in different timezones</td>
+            <td>Always use <code>DateTime.UtcNow</code></td>
+          </tr>
+          <tr>
+            <td>Sensitive data in JWT payload</td>
+            <td>Anyone with the token can read the data</td>
+            <td>Payload = userId + role + expiry only</td>
+          </tr>
+          <tr>
+            <td>Secret key committed to source control</td>
+            <td>Anyone with repo access can forge tokens</td>
+            <td>Use user-secrets or environment variables</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    Block 4 Complete ✓ &nbsp;|&nbsp; Next: Block 5 — Result Pattern + Services
+  </div>
+
+</div>
+</body>
+</html>
