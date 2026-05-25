@@ -1,11 +1,10 @@
-# Build outputs
+﻿# Build outputs
 bin/
 obj/
 out/
 
 # Visual Studio
 .vs/
-*.user
 *.suo
 *.userosscache
 *.sln.docstates
@@ -21,15 +20,12 @@ out/
 *.snupkg
 packages/
 project.lock.json
-project.fragment.lock.json
 artifacts/
 
 # User-specific files
 *.rsuser
 *.suo
 *.user
-*.userosscache
-*.sln.docstates
 
 # Publish output
 publish/
@@ -38,11 +34,10 @@ PublishProfiles/
 # .NET Core
 *.runtimeconfig.json
 
-# Entity Framework migrations (keep the files, ignore the snapshots if you want — we keep them)
-# Uncomment below to ignore migrations:
-# **/Migrations/
+# Private learning docs - kept local only (see docs/.gitignore)
+MASTER-PLAN.md
 
-# Secrets — NEVER commit these
+# Secrets - NEVER commit these
 appsettings.Production.json
 secrets.json
 *.pfx
