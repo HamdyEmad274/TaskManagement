@@ -42,5 +42,11 @@ namespace TaskManagement.Infrastructure.Persistence.Repositories
             _appDbContext.Tasks.Update(task);
             return Task.CompletedTask;
         }
+
+        public Task DeleteAsync(TaskItem task)
+        {
+            _appDbContext.Tasks.Remove(task);
+            return Task.CompletedTask;
+        }
     }
 }

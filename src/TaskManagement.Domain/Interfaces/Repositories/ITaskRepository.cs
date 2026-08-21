@@ -8,5 +8,6 @@ namespace TaskManagement.Domain.Interfaces.Repositories
         Task<IEnumerable<TaskItem>> GetAllByUserIdAsync(Guid userId);
         Task AddAsync(TaskItem task);
         Task UpdateAsync(TaskItem task);
+        Task DeleteAsync(TaskItem task);
     }
 }
