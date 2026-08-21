@@ -1,7 +1,11 @@
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using TaskManagement.API.Middleware;
+using TaskManagement.Application.Common.Behaviours;
+using TaskManagement.Application.Users.Commands.RegisterUser;
 using TaskManagement.Infrastructure.Extensions;
 using TaskManagement.Infrastructure.Persistence;
 
@@ -33,6 +37,16 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddControllers();
 builder.Services.AddAuthorization();
+builder.Services.AddMediatR(cfg =>
+       {
+           cfg.RegisterServicesFromAssembly(typeof(RegisterUserCommandHandler).Assembly);
+           cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
+           cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+       }
+);
+
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserCommand>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

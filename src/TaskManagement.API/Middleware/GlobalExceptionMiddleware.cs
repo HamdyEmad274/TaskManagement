@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 
 namespace TaskManagement.API.Middleware
 {
@@ -19,6 +20,11 @@ namespace TaskManagement.API.Middleware
             {
                 await _next(context);
             }
+            catch(ValidationException ex)
+            {
+                _logger.LogWarning("Validation error occured");
+                await HandleValidationExceptionAsync(context, ex);
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unhandled exception on {Method} {Path}", context.Request.Method, context.Request.Path);
@@ -32,6 +38,28 @@ namespace TaskManagement.API.Middleware
                 };
                 await context.Response.WriteAsJsonAsync(problemDetails);
             }
+        }
+
+        private async Task HandleValidationExceptionAsync(HttpContext context, ValidationException ex)
+        {
+            context.Response.ContentType = "application/problem+json";
+            context.Response.StatusCode = 400;
+            
+            var errors = ex.Errors
+                .GroupBy(e=>e.PropertyName)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(e => e.ErrorMessage).ToArray()
+                );
+
+            var problemDetails = new HttpValidationProblemDetails(errors)
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Validation Failed",
+                Detail = "One or more validation errors occurred.",
+                Instance = context.Request.Path
+            };
+            await context.Response.WriteAsJsonAsync(problemDetails);
         }
     }
 }

@@ -34,9 +34,6 @@ PublishProfiles/
 # .NET Core
 *.runtimeconfig.json
 
-# Private learning docs - kept local only (see docs/.gitignore)
-MASTER-PLAN.md
-
 # Secrets - NEVER commit these
 appsettings.Production.json
 secrets.json
