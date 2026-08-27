@@ -26,11 +26,11 @@ namespace TaskManagement.Application.Tasks.Commands.UpdateTask
             var task = await _taskRepository.GetByIdAsync(request.Id);
             if (task == null)
             {
-                return Result.Failure<TaskResponse>("Task not found ");
+                return Result.Failure<TaskResponse>("Task not found");
             }
             if (task.UserId != request.UserId)
             {
-                return Result.Failure<TaskResponse>("You are not allowed to update this task ");
+                return Result.Failure<TaskResponse>("You are not allowed to update this task");
             }
             task.UpdateStatus(request.Status);
             await _taskRepository.UpdateAsync(task);
