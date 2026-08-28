@@ -6,6 +6,6 @@
     <Project Path="src/TaskManagement.Infrastructure/TaskManagement.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="TaskManagement.UnitTests/TaskManagement.UnitTests.csproj" Id="2d524987-31ca-411e-9df3-20dc6ea25e76" />
+    <Project Path="tests/TaskManagement.UnitTests/TaskManagement.UnitTests.csproj" Id="7ce22776-87f8-44fe-95a7-d9071e6c4648" />
   </Folder>
 </Solution>

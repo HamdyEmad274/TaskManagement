@@ -23,11 +23,11 @@ namespace TaskManagement.Application.Tasks.Queries.GetTaskById
             var task = await _taskRepository.GetByIdAsync(request.Id);
             if (task == null)
             {
-                return Result.Failure<TaskResponse>("Task not found ");
+                return Result.Failure<TaskResponse>("Task not found");
             }
             if (task.UserId != request.UserId)
             {
-                return Result.Failure<TaskResponse>("You are not allowed to view this task ");
+                return Result.Failure<TaskResponse>("You are not allowed to view this task");
             }
             var response = new TaskResponse
             {

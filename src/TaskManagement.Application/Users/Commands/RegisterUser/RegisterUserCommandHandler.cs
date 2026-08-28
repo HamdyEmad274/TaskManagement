@@ -15,18 +15,15 @@ namespace TaskManagement.Application.Users.Commands.RegisterUser
         : IRequestHandler<RegisterUserCommand, Result<UserResponse>>
     {
         private readonly IUserRepository _userRepository;
-        private readonly IJwtTokenGenerator _jwtTokenGenerator;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IUnitOfWork _unitOfWork;
 
         public RegisterUserCommandHandler(IPasswordHasher passwordHasher,
             IUserRepository userRepository,
-            IJwtTokenGenerator jwtTokenGenerator,
             IUnitOfWork unitOfWork)
         {
             _passwordHasher = passwordHasher;
             _userRepository = userRepository;
-            _jwtTokenGenerator = jwtTokenGenerator;
             _unitOfWork = unitOfWork;
         }
         public async Task<Result<UserResponse>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
